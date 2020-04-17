@@ -42,10 +42,37 @@
         <img class='' src='{{ $item->image ?? asset('storage/images/default.jpg') }}' alt='{{ $item->title }}'
           style='object-fit: cover;'>
       </div>
-      <h5 class="card-title">{{ $item->title }}</h5>
-      <p class="card-text">{{ $item->text }}</p>
+      <h5 class="card-title" @if($item->deleted_at) style='color: red;' @endif> @if($item->deleted_at)
+        <del>{{ $item->title }}</del> @else {{ $item->title }} @endif </h5>
+      <p class="card-text @if($item->deleted_at) d-none @endif">{{ $item->text }}</p>
 
       @if (strpos(url()->current(), 'manager')) {{-- это пока, потом уже будет условие для авторизации --}}
+
+      @if($item->isPrivate)
+      <div class='w-100'>
+        <span class="badge badge-warning mb-3" style="width: 100px;">
+          приватная!
+        </span>
+      </div>
+      @endif
+
+      @if($item->deleted_at)
+
+      <form action='{{ route('news.restoreFromBasket', $item) }}' enctype="multipart/form-data" method="Post"
+        class='mt-3'>
+        @csrf
+        <input type="hidden" name='restoreBasket' value="{{ $item->id }}">
+        <button type="submit" class="btn btn-success" name='actionRestore'>Востановить</button>
+      </form>
+
+      <form action='{{ route('news.deleteFromBasket', $item) }}' enctype="multipart/form-data" method="Post"
+        class='mt-3'>
+        @csrf
+        <input type="hidden" name='deleteBasket' value="{{ $item->id }}">
+        <button type="submit" class="btn btn-outline-danger" name='actionDelete'>Удалить из корзины</button>
+      </form>
+
+      @else
 
       <a href='{{ route('news.edit', $item) }}' class="btn btn-outline-success">Редактировать</a>
 
@@ -54,6 +81,8 @@
         @csrf
         <button type="submit" class="btn btn-outline-danger" name='actionDelete'>Удалить</button>
       </form>
+
+      @endif
 
       @else
 

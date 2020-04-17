@@ -25,11 +25,11 @@
   @if(!empty($news)) {{ method_field('PUT') }} @endif
 
   @csrf
-{{-- Заголовок новости --}}
+  {{-- Заголовок новости --}}
   <div class="form-group">
     <label for="news_caption">Заголовок новости*:</label>
     <input type="text" class="form-control @if ($errors->has('title')) is-invalid @endif" id="news_caption" name='title'
-      aria-describedby="text" value='@if(!empty($news)){{ $news->title }}@else{{ old('title') }}@endif'>
+      aria-describedby="text" value='{{ old('title') ?? $news->title ?? '' }}'>
 
     @if ($errors->has('title'))
 
@@ -45,17 +45,17 @@
 
     @else
 
-    <small class='text-muted'>мин. 5 макс. 100 символов </small>
+    <small class='text-muted'>мин. 2 макс. 100 символов </small>
 
     @endif
 
 
   </div>
-{{-- ЧПУ --}}
+  {{-- ЧПУ --}}
   <div class="form-group">
     <label for="news_caption">URL*:</label>
-    <input type="text" class="form-control @if ($errors->has('title_alias')) is-invalid @endif" id="news_caption" name='title_alias'
-      aria-describedby="text" value='@if(!empty($news)){{ $news->title_alias }}@else{{ Str::slug(old('title_alias'), '-') }}@endif'>
+    <input type="text" class="form-control @if ($errors->has('title_alias')) is-invalid @endif" id="news_caption"
+      name='title_alias' aria-describedby="text" value='{{ old('title_alias') ??  $news->title_alias ?? ''  }}'>
 
     @if ($errors->has('title_alias'))
 
@@ -71,20 +71,21 @@
 
     @else
 
-    <small class='text-muted'>мин. 5 макс. 100 символов</small>
+    <small class='text-muted'>мин. 2 макс. 100 символов</small>
 
     @endif
 
 
   </div>
-{{-- Категория --}}
+  {{-- Категория --}}
   <select class="custom-select my-3 @if ($errors->has('category_id')) is-invalid @endif" name='category_id'>
     <option>Выберете категорию:*</option>
 
     @forelse ($categories as $item)
 
-    <option @if (!empty($news) && $news->category_id == $item->id) selected @elseif (empty($news) && $item->id ==
-      old('category_id')) selected @endif value="{{ $item->id }}">{{ $item->category}}</option>
+    <option @if (!empty($news) && old('category_id')==$item->id || !empty($news) && $news->category_id == $item->id)
+      selected @elseif (empty($news) && $item->id == old('category_id')) selected @endif
+      value="{{ $item->id }}">{{ $item->category}}</option>
 
     @empty
 
@@ -107,11 +108,11 @@
   </div>
 
   @endif
-{{-- Текст новости --}}
+  {{-- Текст новости --}}
   <div class="form-group">
     <label for="news-text">Текст новости:*</label>
     <textarea class="form-control @if ($errors->has('text')) is-invalid @endif" id="news-text" rows="5"
-      name='text'>@if(!empty($news)){{ $news->text }}@else{{ old('text') }}@endif</textarea>
+      name='text'>{{ old('text') ??  $news->text ?? ''  }}</textarea>
 
     @if ($errors->has('text'))
 
@@ -164,11 +165,11 @@
       style='width: 100%; height: 100%; object-fit: cover;'>
   </div>
   @endif
-{{-- Приватность новости --}}
+  {{-- Приватность новости --}}
   <div class="custom-control custom-switch my-3">
     <input type="checkbox" class="custom-control-input @if ($errors->has('isPrivate')) is-invalid @endif"
-      id="news-private" name='isPrivate' @if(!empty($news) && $news->isPrivate===1) checked
-    @elseif(old('isPrivate')===1) checked @endif value='1'>
+      id="news-private" name='isPrivate' @if(old('isPrivate') && old('isPrivate')==1) checked @elseif (!empty($news) &&
+      $news->isPrivate==1 && !old()) checked @endif value='1'>
     <label class="custom-control-label" for="news-private">Приватная новость</label>
 
     @if ($errors->has('isPrivate'))
