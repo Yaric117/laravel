@@ -24,6 +24,9 @@
       </div>
       <h5 class="card-title">{{ $news->title }}</h5>
       <p class="card-text">{{ $news->text }}</p>
+        @if($news->url)
+            <a href="{{ $news->url }}" class="btn btn-primary" target="_blank">Читать в источнике...</a>
+        @endif
       <a href="{{ route('news.all') }}" class="btn btn-primary">Все новости...</a>
     </div>
   </div>

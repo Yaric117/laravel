@@ -15,7 +15,7 @@ class News extends Model
     protected $hidden = ['created_at', 'updated_at'];
 
     protected $fillable = [
-        'title', 'text', 'category_id', 'isPrivate', 'image', 'title_alias', 'created_at', 'updated_at', 'deleted_at'
+        'title', 'text', 'category_id', 'isPrivate', 'image', 'url', 'title_alias', 'created_at', 'updated_at', 'deleted_at'
     ];
 
     public static  function insertRules($id = '')

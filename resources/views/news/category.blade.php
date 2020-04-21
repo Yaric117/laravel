@@ -84,7 +84,7 @@
 
       @else
 
-      <a href="{{ route('news.one', [$category->category_alias, $item->title_alias]) }}"
+      <a href="{{ route('news.one', [$categories[$item->category_id]->category_alias, $item->title_alias]) }}"
         class="btn btn-primary">Подробнее...</a>
 
       @endif

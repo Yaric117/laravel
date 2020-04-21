@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Http\Controllers\Admin\ParserController;
 
 class CategoryNewsSeeder extends Seeder
 {
@@ -19,24 +20,16 @@ class CategoryNewsSeeder extends Seeder
     private function getCategory()
     {
 
+        $categories = ParserController::category();
+        $result=[];
 
-        $category = [
-            [
-                'category' => 'В мире',
-                'category_alias' => Str::slug('В мире', '-')
-                
-            ],
-            [
-                'category' => 'Бизнес',
-                'category_alias' => Str::slug('Бизнес', '-')
-            ],
-            [
-                'category' => 'Спорт',
-                'category_alias' => Str::slug('Спорт', '-')
-            ],
-        ];
+        foreach ($categories as $item){
+            $result[]=[
+                'category'=>$item,
+                'category_alias'=>Str::slug($item, '-'),
+            ];
+        }
 
-
-        return $category;
+        return   $result;
     }
 }

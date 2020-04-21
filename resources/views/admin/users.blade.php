@@ -2,7 +2,7 @@
 
 @section('title')
 
-Админ-панель | Пользователи
+    Админ-панель | Пользователи
 
 @endsection
 
@@ -10,37 +10,42 @@
 
 @section('contents')
 
-<div class="row">
-    <a href='{{ route('user.create') }}' type="submit" class="btn btn-outline-success mb-3 @if (url()->current() == route('user.create')) d-none @endif" name='actionDelete'>Добавить пользователя</a>
-    @forelse ($users as $user)
-    <div class="card w-100">
-        <div class="card-body">
-            <div class="alert alert-light" role="alert">
-                права: {{ $roles[$user->role_id]->name }}
+    <div class="row">
+        <a href='{{ route('user.create') }}' type="submit"
+           class="btn btn-outline-success mb-3 @if (url()->current() == route('user.create')) d-none @endif"
+           name='actionDelete'>Добавить пользователя</a>
+        @forelse ($users as $user)
+            <div class="card w-100">
+                <div class="card-body">
+                    <div class="alert alert-light" role="alert">
+                        права: {{ $roles[$user->role_id]->name }}
+                    </div>
+
+                    <h5 class="card-title">{{ $user->name}}</h5>
+                    <p class="card-text">{{ $user->email}}</p>
+                    @if($user->role_id!==3)
+
+                    <a href='{{ route('user.edit', $user) }}' class="btn btn-outline-success">Редактировать</a>
+
+                    @endif
+                    <form action='{{ route('user.destroy', $user) }}' enctype="multipart/form-data" method="POST"
+                          class='mt-3'>
+                        {{ method_field('DELETE') }}
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger" name='actionDelete'>Удалить</button>
+                    </form>
+
+                </div>
             </div>
 
-            <h5 class="card-title">{{ $user->name}}</h5>
-            <p class="card-text">{{ $user->email}}</p>
+        @empty
 
-            <a href='{{ route('user.edit', $user) }}' class="btn btn-outline-success">Редактировать</a>
+            <div class="alert alert-primary" role="alert">
+                Нет пользователей!
+            </div>
 
-            <form action='{{ route('user.destroy', $user) }}' enctype="multipart/form-data" method="POST" class='mt-3'>
-                {{ method_field('DELETE') }}
-                @csrf
-                <button type="submit" class="btn btn-outline-danger" name='actionDelete'>Удалить</button>
-            </form>
+        @endforelse
 
-        </div>
     </div>
-
-    @empty
-
-    <div class="alert alert-primary" role="alert">
-        Нет пользователей!
-    </div>
-
-    @endforelse
-
-</div>
 
 @endsection
