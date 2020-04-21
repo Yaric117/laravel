@@ -1,6 +1,9 @@
 <?php
 
 //Главная
+
+use Illuminate\Support\Facades\Auth;
+
 Route::get('/', 'IndexController@getIndex')->name('index');
 
 /*
@@ -43,7 +46,8 @@ Route::group([
 
     'prefix' => 'manager',
     'namespace' => 'Admin',
-    'as' => 'admin.'
+    'as' => 'admin.',
+    'middleware' => ['auth', 'is_admin']
 
 ], function () {
 
@@ -53,7 +57,8 @@ Route::group([
 Route::group([
 
     'prefix' => 'manager',
-    'namespace' => 'Admin'
+    'namespace' => 'Admin',
+    'middleware' =>  ['auth', 'is_admin']
 
 ], function () {
 
@@ -67,6 +72,11 @@ Route::group([
     Route::post('news/basket-delete', 'NewsController@deleteFromBasket')->name('news.deleteFromBasket');
     Route::post('news/basket-restore', 'NewsController@restoreFromBasket')->name('news.restoreFromBasket');
 
-    //resources
+    //resources News
     Route::resource('news', 'NewsController');
+
+    //resources User
+    Route::resource('user', 'UserController');
 });
+
+Auth::routes();

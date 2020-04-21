@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+
 
 class NewsController extends Controller
 {
@@ -22,7 +24,9 @@ class NewsController extends Controller
             ->get()
             ->keyBy('id');
 
-        $news = News::paginate(3);
+        $news = News::withTrashed()->paginate(3);
+
+        $user = Auth::user();
 
         return view('news.index', [
             'categories' => $category,
@@ -39,7 +43,7 @@ class NewsController extends Controller
 
         if ($category) {
 
-            $news = $category->news()->paginate(3);
+            $news = $category->news()->withTrashed()->paginate(3);
 
             return view('news.category', [
                 'categories' => $categories,
@@ -75,38 +79,27 @@ class NewsController extends Controller
 
         $news = new News();
 
-        if ($request->isMethod('post')) {
+        $request->flash();
 
-            $request->flash();
+        $this->validate($request, News::insertRules(), [], News::attributesForRules());
 
-            $url = null;
+        $result = $news->fill([
+            'title' => $request->title,
+            'title_alias' => Str::slug($request->title_alias, '-'),
+            'text' => $request->text,
+            'category_id' => $request->category_id,
+            'isPrivate' => isset($request->isPrivate),
+            'image' =>  self::getImage($request)
+        ])->save();
 
-            if ($request->file('image')) {
-
-                $path = Storage::putFile('public/images', $request->file('image'));
-                $url = Storage::url($path);
-            }
-
-            $this->validate($request, News::insertRules(), [], News::attributesForRules());
-
-            $result = $news->fill([
-                'title' => $request->title,
-                'title_alias' => Str::slug($request->title_alias, '-'),
-                'text' => $request->text,
-                'category_id' => $request->category_id,
-                'isPrivate' => isset($request->isPrivate),
-                'image' =>  $url
-            ])->save();
-
-            if ($result) {
-                return redirect()
-                    ->route('news.show', $news)
-                    ->with('sucsess', 'Новость  id: ' . $news->id . ' успешно создана!');
-            } else {
-                return redirect()
-                    ->route('news.create')
-                    ->with('error', 'Ошибка добавления новости!');
-            }
+        if ($result) {
+            return redirect()
+                ->route('news.show', $news)
+                ->with('sucsess', 'Новость  id: ' . $news->id . ' успешно создана!');
+        } else {
+            return redirect()
+                ->route('news.create')
+                ->with('error', 'Ошибка добавления новости!');
         }
     }
 
@@ -153,6 +146,19 @@ class NewsController extends Controller
         ]);
     }
 
+    private function getImage($request)
+    {
+
+        $url = null;
+
+        if ($request->file('image')) {
+
+            $path = Storage::putFile('public/images', $request->file('image'));
+
+            return $url = Storage::url($path);
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -164,14 +170,6 @@ class NewsController extends Controller
     {
         $request->flash();
 
-        $url = null;
-
-        if ($request->file('image')) {
-
-            $path = Storage::putFile('public/images', $request->file('image'));
-            $url = Storage::url($path);
-        }
-
         $this->validate($request, News::insertRules($id), [], News::attributesForRules());
 
         $result = News::where('id', $id)
@@ -181,17 +179,17 @@ class NewsController extends Controller
                 'text' => $request->text,
                 'category_id' => $request->category_id,
                 'isPrivate' => isset($request->isPrivate),
-                'image' =>  $url
+                'image' => self::getImage($request)
             ]);
 
         if ($result) {
             return redirect()
                 ->route('news.show', $id)
-                ->with('sucsess', 'Новость  id: ' . $id . ' успешно отредактированна!');
+                ->with('sucsess', 'Новость успешно отредактированна!');
         } else {
             return redirect()
                 ->route('news.update', $id)
-                ->with('error', 'Ошибка редактирования новости id: ' . $id . '!');
+                ->with('error', 'Ошибка редактирования новости!');
         }
     }
 
@@ -209,7 +207,10 @@ class NewsController extends Controller
 
         if ($news->delete()) {
 
-            return view('admin.destroy-message')->with('categories', $category);
+            return back()->with('sucsess', 'Новость помещена в корзину!');
+        } else {
+
+            return back()->with('error', 'Ошибка удаления новости!');
         }
     }
 
@@ -233,13 +234,9 @@ class NewsController extends Controller
             $result = $deletedNews->forceDelete();
 
             if ($result) {
-                return redirect()
-                    ->route('news.basket')
-                    ->with('sucsess', 'Новость  id: ' . $deletedNews->id . ' удалена из корзины!');
+                return back()->with('sucsess', 'Новость удалена из корзины!');
             } else {
-                return redirect()
-                    ->route('news.basket')
-                    ->with('error', 'Ошибка удаления новости  id: ' . $deletedNews->id . '!');
+                return back()->with('error', 'Ошибка удаления новости!');
             }
         }
     }
@@ -251,13 +248,9 @@ class NewsController extends Controller
             $result = $restoreNews->restore();
 
             if ($result) {
-                return redirect()
-                    ->route('news.basket')
-                    ->with('sucsess', 'Новость  id: ' . $restoreNews->id . ' успешно восстановлена!');
+                return back()->with('sucsess', 'Новость успешно восстановлена!');
             } else {
-                return redirect()
-                    ->route('news.basket')
-                    ->with('error', 'Ошибка восстановления новости id: ' . $restoreNews->id . ' из корзины!');
+                return back()->with('error', 'Ошибка восстановления новости из корзины!');
             }
         }
     }
