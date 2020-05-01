@@ -26,11 +26,9 @@ class NewsController extends Controller
 
         $news = News::withTrashed()->paginate(3);
 
-        $user = Auth::user();
-
         return view('news.index', [
             'categories' => $category,
-            'news' => $news
+            'news' => $news,
         ]);
     }
 
@@ -95,7 +93,7 @@ class NewsController extends Controller
         if ($result) {
             return redirect()
                 ->route('news.show', $news)
-                ->with('sucsess', 'Новость  id: ' . $news->id . ' успешно создана!');
+                ->with('success', 'Новость  id: ' . $news->id . ' успешно создана!');
         } else {
             return redirect()
                 ->route('news.create')
@@ -185,7 +183,7 @@ class NewsController extends Controller
         if ($result) {
             return redirect()
                 ->route('news.show', $id)
-                ->with('sucsess', 'Новость успешно отредактированна!');
+                ->with('success', 'Новость успешно отредактированна!');
         } else {
             return redirect()
                 ->route('news.update', $id)
@@ -207,7 +205,7 @@ class NewsController extends Controller
 
         if ($news->delete()) {
 
-            return back()->with('sucsess', 'Новость помещена в корзину!');
+            return back()->with('success', 'Новость помещена в корзину!');
         } else {
 
             return back()->with('error', 'Ошибка удаления новости!');
@@ -234,7 +232,7 @@ class NewsController extends Controller
             $result = $deletedNews->forceDelete();
 
             if ($result) {
-                return back()->with('sucsess', 'Новость удалена из корзины!');
+                return back()->with('success', 'Новость удалена из корзины!');
             } else {
                 return back()->with('error', 'Ошибка удаления новости!');
             }
@@ -248,7 +246,7 @@ class NewsController extends Controller
             $result = $restoreNews->restore();
 
             if ($result) {
-                return back()->with('sucsess', 'Новость успешно восстановлена!');
+                return back()->with('success', 'Новость успешно восстановлена!');
             } else {
                 return back()->with('error', 'Ошибка восстановления новости из корзины!');
             }

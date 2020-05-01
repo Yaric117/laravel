@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Faker\Generator as Faker;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -20,13 +21,16 @@ class UserSeeder extends Seeder
     private function getCategory()
     {
 
+        $pass = Hash::make('123');
+
 
         $role = [
+
             [
                 'name' => 'admin',
                 'email' => 'admin@laravel.loc',
                 'email_verified_at' => now(),
-                'password' => '$2y$10$W1naXoDqQWoG/ZMGsgrZx.0VP7XWH60u13KbmRpFvuP5BlX0lW0.u', // password
+                'password' => $pass, // password
                 'remember_token' => Str::random(10),
                 'role_id' => 1,
 
@@ -35,7 +39,7 @@ class UserSeeder extends Seeder
                 'name' => 'content',
                 'email' => 'content@laravel.loc',
                 'email_verified_at' => now(),
-                'password' => '$2y$10$W1naXoDqQWoG/ZMGsgrZx.0VP7XWH60u13KbmRpFvuP5BlX0lW0.u', // password
+                'password' => $pass, // password
                 'remember_token' => Str::random(10),
                 'role_id' => 2,
             ],
@@ -43,7 +47,7 @@ class UserSeeder extends Seeder
                 'name' => 'user',
                 'email' => 'user@laravel.loc',
                 'email_verified_at' => now(),
-                'password' => '$2y$10$W1naXoDqQWoG/ZMGsgrZx.0VP7XWH60u13KbmRpFvuP5BlX0lW0.u', // password
+                'password' => $pass, // password
                 'remember_token' => Str::random(10),
                 'role_id' => 3,
             ],

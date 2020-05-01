@@ -11,11 +11,12 @@ class IndexController extends Controller
     /**
      * вывод всех ноностей
      *
-     * 
+     *
      */
 
     public function index()
     {
+
         $category = CategoryNews::query()
             ->get()
             ->keyBy('id');
@@ -23,7 +24,7 @@ class IndexController extends Controller
         $news = News::query()
             ->where('isPrivate', false)
             ->orderBy('news.id', 'DESC')
-            ->paginate(3);
+            ->paginate(5);
 
         return view('news.index', [
             'categories' => $category,
@@ -34,7 +35,7 @@ class IndexController extends Controller
     /**
      * вывод оной ноности
      *
-     * 
+     *
      */
 
     public function showOne($category, $news)
@@ -46,7 +47,7 @@ class IndexController extends Controller
 
         $category = CategoryNews::where('category_alias', $category)->first();
 
-        $newsOne = News::where('title_alias', $news)->first();
+        $newsOne = News::where('title_alias','=', $news)->first();
 
         if ($newsOne) {
 
@@ -63,7 +64,7 @@ class IndexController extends Controller
     /**
      * Вывод по категориям
      *
-     * 
+     *
      */
     public function category($name)
     {
@@ -81,7 +82,7 @@ class IndexController extends Controller
                 ->news()
                 ->where('isPrivate', false)
                 ->orderBy('news.id', 'DESC')
-                ->paginate(3);
+                ->paginate(5);
 
             return view('news.category', [
                 'categories' => $categories,

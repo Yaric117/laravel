@@ -52,6 +52,7 @@ Route::group([
 ], function () {
 
     Route::get('/', 'IndexController@index')->name('index');
+    Route::get('/parser', 'ParserController@index')->name('parser');
 });
 
 Route::group([
@@ -76,6 +77,8 @@ Route::group([
     Route::resource('news', 'NewsController');
 
     //resources User
+    Route::get('user/{user}/edit-pass', 'UserController@editPassword')->name('user.edit-password');
+    Route::put('user/{user}/update-pass', 'UserController@updatePassword')->name('user.update-password');
     Route::resource('user', 'UserController');
 });
 

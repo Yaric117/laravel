@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -37,8 +38,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public static  function insertRules($id)
+    public static function createRules($id)
     {
+
         return [
             'name' => ['required', 'string', 'min:2', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', "unique:users,email,{$id}"],
@@ -47,7 +49,25 @@ class User extends Authenticatable
         ];
     }
 
-    public static  function attributesForRules()
+    public static function insertRules($id)
+    {
+
+        return [
+            'name' => ['required', 'string', 'min:2', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', "unique:users,email,{$id}"],
+            'role_id' => ['required', 'integer', "exists:users_roles,id"],
+        ];
+    }
+
+    public static function passwordRules()
+    {
+
+        return [
+            'password' => ['required', 'string', 'min:3', 'confirmed'],
+        ];
+    }
+
+    public static function attributesForRules()
     {
         return [
 
